@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-@Model class Note: Identifiable, Hashable, Encodable {
+@Model class Note: Identifiable, Hashable, Codable {
 	@Attribute(.unique) public var id: UUID
 	public var title: String
 	public var text: String
@@ -19,6 +19,14 @@ import SwiftData
 		self.title = title
 		self.text = text
 		self.createdAt = Date.now
+	}
+	
+	required init(from: any Decoder) throws {
+		let container = try from.container(keyedBy: CodingKeys.self)
+		self.id = try container.decode(UUID.self, forKey: .id)
+		self.title = try container.decode(String.self, forKey: .title)
+		self.text = try container.decode(String.self, forKey: .text)
+		self.createdAt = try container.decode(Date.self, forKey: .createdAt)
 	}
 	
 	func encode(to encoder: any Encoder) throws {
