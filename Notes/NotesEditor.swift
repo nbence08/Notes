@@ -17,9 +17,10 @@ struct NoteEditor : View {
 	public let note: Note
 
 	var body: some View {
-		Form {
+		VStack {
 			TextField("Title", text: $title)
 			TextEditor(text: $text)
+				.background(Color(.systemBackground))
 			Button("Save") {
 				note.title = title
 				note.text = text
@@ -30,10 +31,16 @@ struct NoteEditor : View {
 					print(error.localizedDescription)
 				}
 				dismiss.callAsFunction()
+			}.onAppear {
+				title = note.title
+				text = note.text
 			}
-		}.onAppear {
-			title = note.title
-			text = note.text
 		}
+		.padding(EdgeInsets.init(top: 20, leading: 20, bottom: 20, trailing: 20))
 	}
 }
+
+#Preview {
+	NoteEditor(note: Note(title: "abcab", text: "textual"))
+}
+
