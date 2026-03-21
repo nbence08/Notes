@@ -41,5 +41,5 @@ import SwiftData
 		case id, title, text, createdAt
 	}
 	
-	@Relationship(inverse: \Label.self) public var labels: Set<Label> = []
+	@Relationship(inverse: \Tag.notes) public var tags: [Tag] = []
 }
