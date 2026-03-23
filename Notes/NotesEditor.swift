@@ -25,7 +25,8 @@ struct NoteEditor : View {
 			Button("Save") {
 				note.tags.removeAll()
 
-				for word in text.split(separator: " ") {
+				for word in text.components(separatedBy: CharacterSet.whitespacesAndNewlines)
+					.filter ( { !$0.isEmpty } ) {
 					guard !word.isEmpty else {
 						continue
 					}
@@ -55,6 +56,7 @@ struct NoteEditor : View {
 				title = note.title
 				text = note.text
 			}
+			.foregroundStyle(Color(.systemBlue))
 		}
 		.padding(EdgeInsets.init(top: 20, leading: 20, bottom: 20, trailing: 20))
 	}
@@ -82,7 +84,7 @@ struct TagsWatchingTextEditor : UIViewRepresentable {
 	func updateUIView(_ uiView: UITextView, context: Context) {	}
 	
 	func makeUIView(context: Context) -> UITextView {
-		var textView = UITextView()
+		let textView = UITextView()
 		textView.textStorage.delegate = context.coordinator
 		textView.delegate = context.coordinator
 		textView.text = text

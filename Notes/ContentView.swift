@@ -13,8 +13,25 @@ struct ContentView: View {
 	@Environment(\.editMode) private var editMode
 	@Query public var items: [Note]
 	@State private var selection: Set<UUID> = []
+	@State private var selectTagsSheet: Bool = false
+	@State private var selectedTags: Set<Tag> = []
 
 	@State private var navigationPath: NavigationPath = NavigationPath()
+	
+	var itemsWithSelectedTags: [Note] {
+		var retVal: [Note] = []
+		guard !selectedTags.isEmpty else {
+			return items
+		}
+
+		for note in items {
+			if selectedTags.intersection(note.tags).count > 0 {
+				retVal.append(note)
+			}
+		}
+
+		return retVal
+	}
 
 	var isEditMode: Bool {
 		editMode?.wrappedValue.isEditing ?? false
@@ -23,7 +40,7 @@ struct ContentView: View {
 	var body: some View {
 		NavigationStack (path: $navigationPath) {
 			List(selection: $selection) {
-				ForEach(items, id: \.id) { note in
+				ForEach(itemsWithSelectedTags, id: \.id) { note in
 					HStack {
 						Text(note.title)
 						Spacer()
@@ -36,6 +53,9 @@ struct ContentView: View {
 					}
 					
 				}
+			}
+			.sheet(isPresented: $selectTagsSheet) {
+				TagSelector(selectedTags: $selectedTags)
 			}
 			.toolbar {
 				ToolbarItem {
@@ -69,6 +89,13 @@ struct ContentView: View {
 				}
 				ToolbarItem {
 					EditButton()
+				}
+				ToolbarItem {
+					Button {
+						selectTagsSheet = true
+					} label: {
+						Image(systemName: "number")
+					}
 				}
 			}
 			.navigationDestination(for: Note.self) { note in
